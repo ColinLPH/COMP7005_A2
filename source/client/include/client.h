@@ -53,6 +53,7 @@ void get_file_infos(struct file_info_list *head);
 uint8_t *sanitize_file_name(char *file_path);
 int do_send_all(struct file_info_list *head, struct client_opts *opts);
 int connect_to_server(int sockfd, struct client_opts *opts);
+void free_client_opts(struct client_opts *opts);
 void send_file_content(int src_fd, int dest_fd, size_t count);
 void setup_socket_address(struct sockaddr_un *addr, struct client_opts *opts);
 void free_file_info_list(struct file_info_list *head);

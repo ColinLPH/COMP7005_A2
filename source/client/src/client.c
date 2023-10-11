@@ -18,6 +18,7 @@ int run_client(int argc, char *argv[])
     if(check == -1)
     {
         free_file_info_list(head);
+        free_client_opts(&opts);
         return check;
     }
 
@@ -25,6 +26,7 @@ int run_client(int argc, char *argv[])
     check = check_files(head); //check if all files can be opened
     if (check != 0)
     {
+        free_client_opts(&opts);
         free_file_info_list(head);
         return -1;
     }
@@ -34,11 +36,13 @@ int run_client(int argc, char *argv[])
     if (check != 0)
     {
         printf("Failed to send files\n");
+        free_client_opts(&opts);
         free_file_info_list(head);
         return -1;
     }
 
     free_file_info_list(head);
+    free_client_opts(&opts);
     printf("All files written successfully\n");
 
     return 0;
@@ -390,6 +394,14 @@ void free_file_info_list(struct file_info_list *head)
         {
             free(node_to_delete);
         }
+    }
+}
+
+void free_client_opts(struct client_opts *opts)
+{
+    if(opts->dest_ip != NULL)
+    {
+        free(opts->dest_ip);
     }
 }
 
