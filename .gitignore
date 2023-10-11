@@ -3,4 +3,6 @@
 *.pcap
 
 /source/server/cmake-build-debug/
+/source/server/build/
 /source/client/cmake-build-debug/
+/source/client/build/
