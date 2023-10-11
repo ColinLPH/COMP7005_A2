@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 
-project(A1
+project(A2
         VERSION 0.2.1
         DESCRIPTION ""
         LANGUAGES C)
@@ -111,7 +111,7 @@ set(DOXYGEN_QUIET YES)
 doxygen_add_docs(doxygen
         ${HEADER_LIST}
         WORKING_DIRECTORY ..
-        COMMENT "Generating Doxygen documentation for A1")
+        COMMENT "Generating Doxygen documentation for A2")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CLANG_TIDY_CHECKS "*")
@@ -147,20 +147,20 @@ else ()
     set(CMAKE_C_CLANG_TIDY clang-tidy -checks=${CLANG_TIDY_CHECKS};--quiet)
 endif ()
 
-add_executable(A1 ${SOURCE_LIST} ${HEADER_LIST})
-target_include_directories(A1 PRIVATE include)
-target_include_directories(A1 PRIVATE /usr/local/include)
-target_link_directories(A1 PRIVATE /usr/local/lib)
+add_executable(A2 ${SOURCE_LIST} ${HEADER_LIST})
+target_include_directories(A2 PRIVATE include)
+target_include_directories(A2 PRIVATE /usr/local/include)
+target_link_directories(A2 PRIVATE /usr/local/lib)
 
 if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    target_include_directories(A1 PRIVATE /usr/include)
+    target_include_directories(A2 PRIVATE /usr/include)
 endif ()
 
-set_target_properties(A1 PROPERTIES
+set_target_properties(A2 PROPERTIES
         VERSION ${PROJECT_VERSION}
         SOVERSION ${PROJECT_VERSION_MAJOR})
 
-set_target_properties(A1 PROPERTIES OUTPUT_NAME "client")
-install(TARGETS A1 DESTINATION bin)
+set_target_properties(A2 PROPERTIES OUTPUT_NAME "client")
+install(TARGETS A2 DESTINATION bin)
 
-add_dependencies(A1 doxygen)
+add_dependencies(A2 doxygen)
