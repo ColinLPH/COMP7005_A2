@@ -283,21 +283,62 @@ int creat_socket(struct client_opts *opts)
 
 int connect_to_server(int sockfd, struct client_opts *opts)
 {
-    struct sockaddr_un addr;
+    struct sockaddr_in ipv4_addr;
+    struct sockaddr_in6 ipv6_addr;
+
     int ret;
 
-    setup_socket_address(&addr, opts);
+    memset(&ipv4_addr, 0, sizeof(ipv4_addr));
+    memset(&ipv6_addr, 0, sizeof(ipv6_addr));
 
-    ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
-    if(ret == -1)
+    if(opts->domain == AF_INET)
     {
-        printf("Connection failed, trying again in %d seconds...\n", SLEEP_TIMER);
-        sleep(SLEEP_TIMER);
-        ret = connect(sockfd, (struct sockaddr *)&addr, sizeof(addr));
-        if (ret == -1)
+        if(inet_pton(opts->domain, opts->dest_ip, &ipv4_addr.sin_addr) != 1)
         {
-            return -1;
+            perror("Invalid IP address");
+            exit(EXIT_FAILURE);
         }
+        ipv4_addr.sin_family = AF_INET;
+        ipv4_addr.sin_port = htons(opts->dest_port);
+
+        ret = connect(sockfd, (struct sockaddr *)&ipv4_addr, sizeof(ipv4_addr));
+        if(ret == -1)
+        {
+            printf("Connection failed, trying again in %d seconds...\n", SLEEP_TIMER);
+            sleep(SLEEP_TIMER);
+            ret = connect(sockfd, (struct sockaddr *)&ipv4_addr, sizeof(ipv4_addr));
+            if (ret == -1)
+            {
+                return -1;
+            }
+        }
+    }
+    else if(opts->domain == AF_INET6)
+    {
+        if(inet_pton(opts->domain, opts->dest_ip, &ipv6_addr.sin6_addr) != 1)
+        {
+            perror("Invalid IP address");
+            exit(EXIT_FAILURE);
+        }
+        ipv6_addr.sin6_family = AF_INET6;
+        ipv6_addr.sin6_port = htons(opts->dest_port);
+
+        ret = connect(sockfd, (struct sockaddr *)&ipv6_addr, sizeof(ipv6_addr));
+        if(ret == -1)
+        {
+            printf("Connection failed, trying again in %d seconds...\n", SLEEP_TIMER);
+            sleep(SLEEP_TIMER);
+            ret = connect(sockfd, (struct sockaddr *)&ipv6_addr, sizeof(ipv6_addr));
+            if (ret == -1)
+            {
+                return -1;
+            }
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Invalid domain: %d\n", opts->domain);
+        exit(EXIT_FAILURE);
     }
 
     printf("Connected to socket: %s:%u\n", opts->dest_ip, opts->dest_port);
@@ -316,9 +357,10 @@ void setup_socket_address(struct sockaddr_un *addr, struct client_opts *opts)
 
     if(opts->domain == AF_INET)
     {
-        struct sockaddr_in *ipv4_addr;
+        struct sockaddr_in *ipv4_addr = NULL;
 
-        ipv4_addr = (struct sockaddr_in *)&addr;
+//        ipv4_addr = (struct sockaddr_in *)&addr;
+        addr = (struct sockaddr_un *)ipv4_addr;
         ipv4_addr->sin_family = AF_INET;
         ipv4_addr->sin_port = htons(opts->dest_port);
     }
