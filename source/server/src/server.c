@@ -152,7 +152,7 @@ int parse_args(struct server_options *opts, int argc, char *argv[])
         return -1;
     }
 
-    char *path = argv[DIR_INDEX];
+    char *path = strdup(argv[DIR_INDEX]);
     printf("Pre-Sanitized Path: %s\n", path);
     sanitize_path(path);
     printf("Sanitized Path: %s\n", path);
@@ -234,8 +234,6 @@ int is_valid_char(const char c) {
 
 void sanitize_path(char *path)
 {
-    wordexp_t p;
-
     //change path so that it's a valid dir path
     size_t len = strlen(path);
 
@@ -247,13 +245,6 @@ void sanitize_path(char *path)
         }
     }
 
-    if(wordexp(path, &p, 0) != 0)
-    {
-        printf("bad wordexp\n");
-    }
-    printf("expanded str: %s\n", p.we_wordv[0]);
-    path = strdup(p.we_wordv[0]);
-    wordfree(&p);
 }
 
 int make_dir(char *dir_path)
