@@ -156,7 +156,10 @@ int parse_args(struct server_options *opts, int argc, char *argv[])
     printf("Pre-Sanitized Path: %s\n", path);
     sanitize_path(path);
     printf("Sanitized Path: %s\n", path);
-    opts->dir_path = path;
+    size_t len = strlen(path);
+    strcpy(opts->dir_path, path);
+    opts->dir_path[len] = '\0';
+    free(path);
 
     opts->host_port = parse_in_port_t(argv[PORT_INDEX]);
 

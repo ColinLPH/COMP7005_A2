@@ -20,12 +20,13 @@
 #define DIR_INDEX 3
 #define PORT_INDEX 2
 #define IP_INDEX 1
+#define MAX_DIR_NAME_LEN 256
 
 struct server_options
 {
     char *host_ip;
     int domain;
-    char *dir_path;
+    char dir_path[MAX_DIR_NAME_LEN];
     in_port_t host_port;
 };
 
