@@ -52,7 +52,7 @@ int run_server(int argc, char *argv[])
         free(opts.dir_path);
         return -1;
     }
-
+    free(opts.host_ip);
     setup_signal_handler();
     while(!exit_flag)
     {
