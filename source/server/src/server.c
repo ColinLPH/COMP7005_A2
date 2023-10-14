@@ -129,7 +129,7 @@ int run_server(int argc, char *argv[])
         }
     }
 
-    free(opts.dir_path);
+    free_server_opts(&opts);
     // Free the client_sockets array
     free(client_sockets);
     socket_close(bindfd);
@@ -148,12 +148,11 @@ int parse_args(struct server_options *opts, int argc, char *argv[])
     opts->host_ip = strdup(argv[IP_INDEX]);
     if(set_domain(opts) == -1)
     {
-        //TODO: free stuff
         free(opts->host_ip);
         return -1;
     }
 
-    char *path = strdup(argv[DIR_INDEX]);
+    char *path = argv[DIR_INDEX];
     printf("Pre-Sanitized Path: %s\n", path);
     sanitize_path(path);
     printf("Sanitized Path: %s\n", path);
@@ -295,7 +294,7 @@ int do_bind(int bindfd, struct server_options *opts)
 
     if(opts->domain == AF_INET)
     {
-        if(inet_pton(opts->domain, opts->host_ip, &ipv4_addr) != 1)
+        if(inet_pton(opts->domain, opts->host_ip, &ipv4_addr.sin_addr) != 1)
         {
             perror("Invalid IP address");
             return -1;
@@ -310,7 +309,7 @@ int do_bind(int bindfd, struct server_options *opts)
     }
     else if(opts->domain == AF_INET6)
     {
-        if(inet_pton(opts->domain, opts->host_ip, &ipv6_addr) != 1)
+        if(inet_pton(opts->domain, opts->host_ip, &ipv6_addr.sin6_addr) != 1)
         {
             perror("Invalid IP address");
             return -1;
@@ -345,51 +344,6 @@ int do_listen(int bindfd, int backlog)
     printf("Listening for incoming connections...\n");
     return 0;
 }
-
-//void handle_connection(int acceptfd, struct sockaddr_storage *client_addr, struct server_options *opts)
-//{
-//    struct file_info file;
-//    ssize_t rbytes;
-//
-//    //read file_name_size
-//    while(!exit_flag)
-//    {
-//        memset(&file, 0, sizeof(struct file_info));
-//        rbytes = read(acceptfd, &file.file_name_size, 1);
-//        if(rbytes <= 0)
-//        {
-//            break;
-//        }
-//        printf("-------------------------------------------\n");
-//        printf("File name size: %d\n", file.file_name_size);
-//
-//        //read file_name
-//        file.file_name = malloc(file.file_name_size+1);
-//        if(file.file_name == NULL)
-//        {
-//            printf("error malloc-ing\n");
-//            return;
-//        }
-//        read(acceptfd, file.file_name, file.file_name_size);
-//        file.file_name[file.file_name_size] = '\0';
-//        printf("File name: %s\n", file.file_name);
-//
-//        //read file_size
-//        read(acceptfd, &file.file_size, sizeof(file.file_size));
-//        printf("File size: %lld\n", file.file_size);
-//
-//        //create file
-//        printf("Creating file...\n");
-//        create_file(opts, &file);
-//        //copy file content over to created file
-//        copy_paste(acceptfd, file.filefd, file.file_size);
-//        printf("File contents copied\n");
-//        close(file.filefd);
-//        free(file.file_name);
-//    }
-//    printf("Client disconnected\n");
-//
-//}
 
 void handle_data_in(int client_fd, struct server_options *opts, fd_set *readfds, int *client_sockets, size_t i)
 {
@@ -544,10 +498,17 @@ void socket_close(int fd)
     }
 }
 
+void free_server_opts(struct server_options *opts)
+{
+    free(opts->dir_path);
+    free(opts->host_ip);
+}
+
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 static void sigint_handler(int signum)
 {
+    printf("\nsigint_handler triggered\n");
     exit_flag = 1;
 }
 #pragma GCC diagnostic pop

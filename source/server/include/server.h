@@ -16,9 +16,6 @@
 #include <unistd.h>
 #include <wordexp.h>
 
-
-#define DOMAIN_PATH "/tmp/dompath"
-#define SERVER_BACKLOG 5
 #define SERVER_ARGS 4
 #define DIR_INDEX 3
 #define PORT_INDEX 2
@@ -49,12 +46,12 @@ int make_dir(char *dir_path);
 int creat_socket(int domain, int type, int options);
 int do_bind(int bindfd, struct server_options *opts);
 int do_listen(int bindfd, int backlog);
-//void handle_connection(int acceptfd, struct sockaddr_storage *client_addr, struct server_options *opts);
 void handle_data_in(int client_fd, struct server_options *opts, fd_set *readfds, int *client_sockets, size_t i);
 int create_file(struct server_options *opts, struct file_info *file);
 void copy_paste(int src_fd, int dest_fd, int64_t count);
 char *generate_file_name(char *dir_path, char *file_name);
 void socket_close(int fd);
+void free_server_opts(struct server_options *opts);
 static void setup_signal_handler(void);
 
 #endif //A1_SERVER_H
