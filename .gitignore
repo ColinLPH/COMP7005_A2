@@ -1,5 +1,6 @@
 /report/
 /video/
+/pcap/
 *.pcap
 
 /source/server/cmake-build-debug/
