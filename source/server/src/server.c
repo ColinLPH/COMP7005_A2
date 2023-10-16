@@ -1,11 +1,6 @@
 #include <arpa/inet.h>
 #include "server.h"
 
-/* things to change
-    - take in new args
-    - change to tcp
-    - implement i/o multiplexing
-*/
 static volatile sig_atomic_t exit_flag = 0;
 
 int run_server(int argc, char *argv[])
@@ -347,7 +342,7 @@ void handle_data_in(int client_fd, struct server_options *opts, fd_set *readfds,
               close(client_fd);
               FD_CLR((unsigned int)client_fd, readfds); // Remove the closed socket from the set
               client_sockets[i] = 0;
-
+              return;
         }
         printf("-------------------------------------------\n");
         printf("File name size: %d\n", file.file_name_size);
@@ -502,9 +497,9 @@ void free_server_opts(struct server_options *opts)
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 static void sigint_handler(int signum)
 {
-    printf("\nsigint_handler triggered\n");
     if(signum == SIGINT)
     {
+        printf("\nsigint_handler triggered\n");
         exit_flag = 1;
     }
 }
