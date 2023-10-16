@@ -50,7 +50,7 @@ int run_server(int argc, char *argv[])
     }
     free(opts.host_ip);
     setup_signal_handler();
-    while(!exit_flag)
+    while(exit_flag != 1)
     {
         // Clear the socket set
         FD_ZERO(&readfds);
@@ -503,7 +503,10 @@ void free_server_opts(struct server_options *opts)
 static void sigint_handler(int signum)
 {
     printf("\nsigint_handler triggered\n");
-    exit_flag = 1;
+    if(signum == SIGINT)
+    {
+        exit_flag = 1;
+    }
 }
 #pragma GCC diagnostic pop
 
