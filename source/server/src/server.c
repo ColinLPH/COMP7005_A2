@@ -30,26 +30,22 @@ int run_server(int argc, char *argv[])
 
     if(make_dir(opts.dir_path) == -1)
     {
-        free(opts.dir_path);
         return -1;
     }
 
     bindfd = creat_socket(opts.domain, SOCK_STREAM, 0);
     if(bindfd == -1)
     {
-        free(opts.dir_path);
         return -1;
     }
 
     if(do_bind(bindfd, &opts) == -1)
     {
-        free(opts.dir_path);
         return -1;
     }
 
     if(do_listen(bindfd, SOMAXCONN) == -1)
     {
-        free(opts.dir_path);
         return -1;
     }
     free(opts.host_ip);
@@ -183,13 +179,13 @@ int set_domain(struct server_options *opts)
     }
     if(strrchr(opts->host_ip, ':') != NULL)
     {
-        printf("IPv4\n");
+        printf("IPv6\n");
         opts->domain = AF_INET6;
         return 0;
     }
     else if(strrchr(opts->host_ip, '.') != NULL)
     {
-        printf("IPv6\n");
+        printf("IPv4\n");
         opts->domain = AF_INET;
         return 0;
     }
@@ -494,8 +490,14 @@ void socket_close(int fd)
 
 void free_server_opts(struct server_options *opts)
 {
-    free(opts->dir_path);
-    free(opts->host_ip);
+    if(opts != NULL)
+    {
+        if(opts->host_ip != NULL)
+        {
+            free(opts->host_ip);
+        }
+    }
+
 }
 
 #pragma GCC diagnostic push
