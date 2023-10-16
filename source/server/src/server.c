@@ -179,13 +179,11 @@ int set_domain(struct server_options *opts)
     }
     if(strrchr(opts->host_ip, ':') != NULL)
     {
-        printf("IPv6\n");
         opts->domain = AF_INET6;
         return 0;
     }
     else if(strrchr(opts->host_ip, '.') != NULL)
     {
-        printf("IPv4\n");
         opts->domain = AF_INET;
         return 0;
     }
